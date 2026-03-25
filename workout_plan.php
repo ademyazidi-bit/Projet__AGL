@@ -140,19 +140,18 @@ function calculateCalories($data, $info, $user_weight, $multiplier) {
     <title>FitPlanner - Workout Plan</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-      body {
+     body {
     font-family: 'Segoe UI', sans-serif;
     background: #1a1a2e;
     color: #eee;
     min-height: 100vh;
-    padding: 30px 20px;
-    padding-top: 100px;
+    margin: 0;
+    padding: 0;
 }
 .container {
     max-width: 750px;
     margin: 0 auto;
-    padding: 30px 20px;
-    padding-top: 30px;
+    padding: 20px;
 }
         .header { text-align: center; margin-bottom: 25px; }
         .header h1 { font-size: 26px; color: #5b9bd5; }

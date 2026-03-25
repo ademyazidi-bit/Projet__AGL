@@ -180,8 +180,102 @@ $quote = $motivational[array_rand($motivational)];
 
             <a href="saved_workouts.php" class="saved-link">View My Saved Workouts →</a>
         </div>
+        <style>
+    .stats-row {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 25px;
+        gap: 15px;
+    }
+    .stat-box {
+        flex: 1;
+        background: #16213e;
+        border: 1px solid #0f3460;
+        border-radius: 10px;
+        padding: 12px;
+        text-align: center;
+        transition: all 0.3s;
+    }
+    .stat-box:hover {
+        border-color: #5b9bd5;
+        transform: translateY(-2px);
+    }
+    .stat-box .val {
+        font-size: 22px;
+        font-weight: bold;
+        color: #5b9bd5;
+    }
+    .stat-box .lbl {
+        font-size: 11px;
+        color: #aaa;
+        margin-top: 3px;
+    }
+    .stat-box .lbl a {
+        text-decoration: none;
+        color: #5b9bd5;
+    }
+    .stat-box .lbl a:hover {
+        text-decoration: underline;
+    }
+    .loading-spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid #0f3460;
+        border-top-color: #5b9bd5;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin-right: 5px;
+    }
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+</style>
 
+<!-- HTML des stats -->
+<div class="stats-row">
+    <div class="stat-box">
+        <div class="val">🎯</div>
+        <div class="lbl" id="calories-goal">
+            <span class="loading-spinner"></span> Chargement...
+        </div>
     </div>
+    <div class="stat-box">
+        <div class="val">🍽️</div>
+        <div class="lbl">
+            <a href="diet_plan_generator.php">Plan nutritionnel →</a>
+        </div>
+    </div>
+</div>
+
+<script>
+// Récupérer l'objectif calorique depuis get_user_stats.php
+function loadCalorieGoal() {
+    const goalElement = document.getElementById('calories-goal');
+    
+    fetch('get_user_stats.php')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Erreur réseau');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.calories_goal && data.calories_goal > 0) {
+                goalElement.innerHTML = data.calories_goal + ' kcal';
+            } else {
+                goalElement.innerHTML = 'À définir dans Nutrition';
+            }
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+            goalElement.innerHTML = '⚠️ Non disponible';
+        });
+}
+
+// Charger au démarrage
+loadCalorieGoal();
+</script>
 </div>
 </body>
 </html>

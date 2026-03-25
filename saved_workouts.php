@@ -1,9 +1,9 @@
 <?php
 session_start();
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.html");
-    exit();
-}
+
+// ========== AJOUTER L'INCLUSION DE LA NAVBAR ==========
+require_once 'navbar.php';
+// =====================================================
 
 $conn = mysqli_connect("localhost", "root", "", "fitplanner");
 
@@ -22,6 +22,7 @@ $result = mysqli_stmt_get_result($stmt);
 
 $workouts = [];
 while ($row = mysqli_fetch_assoc($result)) {
+    // fetch exercises for each workout
     $stmt2 = mysqli_prepare($conn, "
         SELECT e.name, e.difficulty, c.name AS category, e.equipment
         FROM workout_exercises we
@@ -48,30 +49,43 @@ mysqli_close($conn);
     <title>FitPlanner - Saved Workouts</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-       body {
-    font-family: 'Segoe UI', sans-serif;
-    background: #1a1a2e;
-    color: #eee;
-    min-height: 100vh;
-    padding: 30px 20px;
-    padding-top: 100px;
-}
-        .container { max-width: 750px; margin: 0 auto; }
-        .header { text-align: center; margin-bottom: 30px; }
-        .header img { height: 60px; margin-bottom: 15px; }
-        .header h1 { font-size: 26px; color: #5b9bd5; }
-        .header p { color: #aaa; margin-top: 5px; font-size: 14px; }
-        .workout-link {
-            text-decoration: none;
-            display: block;
-            margin-bottom: 20px;
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #1a1a2e;
+            color: #eee;
+            min-height: 100vh;
+            padding: 0;
+        }
+        .container { 
+            max-width: 750px; 
+            margin: 0 auto; 
+            padding: 20px;
+        }
+        .header { 
+            text-align: center; 
+            margin-bottom: 30px; 
+        }
+        .header img { 
+            height: 60px; 
+            margin-bottom: 15px; 
+        }
+        .header h1 { 
+            font-size: 26px; 
+            color: #5b9bd5; 
+        }
+        .header p { 
+            color: #aaa; 
+            margin-top: 5px; 
+            font-size: 14px; 
         }
         .workout-card {
             background: #16213e;
             border: 1px solid #0f3460;
             border-radius: 14px;
             padding: 20px;
-            transition: border-color 0.2s, transform 0.2s;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
         }
         .workout-card:hover {
             border-color: #5b9bd5;
@@ -85,8 +99,14 @@ mysqli_close($conn);
             flex-wrap: wrap;
             gap: 8px;
         }
-        .workout-header h2 { font-size: 18px; color: #5b9bd5; }
-        .workout-meta { font-size: 12px; color: #aaa; }
+        .workout-header h2 { 
+            font-size: 18px; 
+            color: #5b9bd5; 
+        }
+        .workout-meta { 
+            font-size: 12px; 
+            color: #aaa; 
+        }
         .goal-badge {
             padding: 4px 12px;
             border-radius: 20px;
@@ -95,13 +115,9 @@ mysqli_close($conn);
             background: #0f3460;
             color: #5b9bd5;
         }
-        .view-hint {
-            font-size: 12px;
-            color: #5b9bd5;
-            text-align: right;
-            margin-bottom: 10px;
+        .exercise-list { 
+            list-style: none; 
         }
-        .exercise-list { list-style: none; }
         .exercise-list li {
             padding: 8px 0;
             border-bottom: 1px solid #0f3460;
@@ -111,9 +127,17 @@ mysqli_close($conn);
             justify-content: space-between;
             align-items: center;
         }
-        .exercise-list li:last-child { border-bottom: none; }
-        .ex-name { font-weight: bold; color: #eee; }
-        .ex-tags { display: flex; gap: 6px; }
+        .exercise-list li:last-child { 
+            border-bottom: none; 
+        }
+        .ex-name { 
+            font-weight: bold; 
+            color: #eee; 
+        }
+        .ex-tags { 
+            display: flex; 
+            gap: 6px; 
+        }
         .tag {
             background: #0f3460;
             padding: 2px 8px;
@@ -135,7 +159,10 @@ mysqli_close($conn);
             padding: 60px 20px;
             color: #aaa;
         }
-        .empty-state p { font-size: 16px; margin-bottom: 20px; }
+        .empty-state p { 
+            font-size: 16px; 
+            margin-bottom: 20px; 
+        }
         .btn {
             padding: 12px 24px;
             border-radius: 10px;
@@ -147,51 +174,71 @@ mysqli_close($conn);
             display: inline-block;
             transition: background 0.2s;
         }
-        .btn-primary { background: #5b9bd5; color: white; }
-        .btn-primary:hover { background: #4a8ac4; }
-        .btn-secondary { background: #0f3460; color: #aaa; }
-        .btn-secondary:hover { background: #1a3a6e; color: white; }
+        .btn-primary { 
+            background: #5b9bd5; 
+            color: white; 
+        }
+        .btn-primary:hover { 
+            background: #4a8ac4; 
+        }
+        .btn-secondary { 
+            background: #0f3460; 
+            color: #aaa; 
+        }
+        .btn-secondary:hover { 
+            background: #1a3a6e; 
+            color: white; 
+        }
         .top-nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 25px;
         }
+        .view-detail {
+            text-align: right;
+            margin-top: 15px;
+            font-size: 12px;
+            color: #5b9bd5;
+        }
     </style>
 </head>
 <body>
-<?php include 'navbar.php'; ?>
+
+<!-- La navbar est déjà incluse via require_once 'navbar.php' -->
+
 <div class="container">
 
     <div class="header">
+        <img src="FullLogo_Transparent_NoBuffer.png" alt="FitPlanner">
         <h1>My Saved Workouts</h1>
         <p>Your personal workout library</p>
     </div>
 
     <div class="top-nav">
-        <a href="workout_generator.html" class="btn btn-secondary">← Generate New</a>
+        <a href="workout_generator.php" class="btn btn-secondary">← Generate New</a>
         <span style="color:#aaa; font-size:14px;"><?php echo count($workouts); ?> saved workout<?php echo count($workouts) !== 1 ? 's' : ''; ?></span>
     </div>
 
     <?php if (empty($workouts)): ?>
         <div class="empty-state">
             <p>You haven't saved any workouts yet.</p>
-            <a href="workout_generator.html" class="btn btn-primary">Generate Your First Workout</a>
+            <a href="workout_generator.php" class="btn btn-primary">Generate Your First Workout</a>
         </div>
     <?php else: ?>
         <?php foreach ($workouts as $w): ?>
-        <a href="view_workout.php?id=<?php echo $w['id']; ?>" class="workout-link">
+        <a href="view_workout.php?id=<?php echo $w['id']; ?>" style="text-decoration:none;">
             <div class="workout-card">
                 <div class="workout-header">
                     <div>
-                        <h2><?php echo htmlspecialchars($w['name']); ?></h2>
+                        <h2><?php echo htmlspecialchars($w['name'] ?? 'Workout'); ?></h2>
                         <div class="workout-meta"><?php echo date('M d, Y', strtotime($w['generated_at'])); ?></div>
                     </div>
                     <span class="goal-badge"><?php echo $w['goal']; ?></span>
                 </div>
-                <div class="view-hint">Click to view full details →</div>
+
                 <ul class="exercise-list">
-                    <?php foreach ($w['exercises'] as $ex): ?>
+                    <?php foreach (array_slice($w['exercises'], 0, 3) as $ex): ?>
                     <li>
                         <span class="ex-name"><?php echo $ex['name']; ?></span>
                         <div class="ex-tags">
@@ -201,7 +248,16 @@ mysqli_close($conn);
                         </div>
                     </li>
                     <?php endforeach; ?>
+                    <?php if (count($w['exercises']) > 3): ?>
+                    <li style="color:#5b9bd5; text-align:center;">
+                        + <?php echo count($w['exercises']) - 3; ?> more exercises
+                    </li>
+                    <?php endif; ?>
                 </ul>
+                
+                <div class="view-detail">
+                    Click to view full details →
+                </div>
             </div>
         </a>
         <?php endforeach; ?>
