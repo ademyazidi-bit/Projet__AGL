@@ -103,6 +103,15 @@ $firstname = explode(' ', $fullname)[0];
         <a href="saved_meals.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'saved_meals.php' ? 'active' : ''; ?>">
             📝 Mes repas
         </a>
+        <a href="workout_history.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'workout_history.php' ? 'active' : ''; ?>">
+            📅 Workout History
+        </a>
+        <a href="diet_history.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'diet_history.php' ? 'active' : ''; ?>">
+            🥗 Diet History
+        </a>
+        <a href="profile.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'profile.php' ? 'active' : ''; ?>">
+            👤 Profile
+        </a>
     </div>
     <div class="user-info">
         <span>👋 <?php echo htmlspecialchars($firstname); ?></span>
@@ -112,7 +121,7 @@ $firstname = explode(' ', $fullname)[0];
 
 <?php
 // Appel AJAX pour récupérer les stats nutritionnelles
-if (basename($_SERVER['PHP_SELF']) != 'diet_plan_generator.php' && basename($_SERVER['PHP_SELF']) != 'saved_meals.php') {
+if (basename($_SERVER['PHP_SELF']) != 'diet_plan_generator.php' && basename($_SERVER['PHP_SELF']) != 'saved_meals.php' && basename($_SERVER['PHP_SELF']) != 'diet_history.php') {
 ?>
 <script>
 fetch('get_nutrition_stats.php')
