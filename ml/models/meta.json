@@ -1,0 +1,31 @@
+{
+  "model_type": "gbm",
+  "features": [
+    "goal_enc",
+    "diff_enc",
+    "age",
+    "weight_kg",
+    "height_cm",
+    "bmi"
+  ],
+  "categories": [
+    "Cardio",
+    "Core",
+    "Full Body",
+    "Chest",
+    "Legs",
+    "Back",
+    "Shoulders",
+    "Arms"
+  ],
+  "goal_classes": [
+    "Maintain Weight",
+    "Muscle Gain",
+    "Weight Loss"
+  ],
+  "diff_classes": [
+    "Advanced",
+    "Beginner",
+    "Intermediate"
+  ]
+}
